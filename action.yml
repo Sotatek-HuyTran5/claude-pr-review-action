@@ -4,7 +4,7 @@ author: sotatek
 
 inputs:
   api-url:
-    description: URL of the claude-pr-review server (e.g. http://13.250.120.160)
+    description: URL of the claude-pr-review server (e.g. https://review.example.com)
     required: true
   api-secret:
     description: x-api-secret header value configured on the server

@@ -21,7 +21,7 @@ jobs:
       group: claude-review-${{ github.event.pull_request.number }}
       cancel-in-progress: true
     steps:
-      - uses: Sotatek-HuyTran5/claude-pr-review-action@main
+      - uses: Sotatek-HuyTran5/claude-pr-review-action@v2
         with:
           api-url: ${{ secrets.REVIEW_API_URL }}
           api-secret: ${{ secrets.REVIEW_API_SECRET }}
