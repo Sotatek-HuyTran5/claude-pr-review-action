@@ -1,13 +1,36 @@
-name: Claude PR Review (on comment)
+name: Claude PR Review
 
 on:
+  pull_request:
+    types: [opened, reopened]
   issue_comment:
     types: [created]
 
 jobs:
-  review:
+  # Triggered automatically when PR is opened/reopened
+  auto-review:
     runs-on: ubuntu-latest
     if: >-
+      github.event_name == 'pull_request' &&
+      !contains(github.event.pull_request.title, '[skip review]') &&
+      github.actor != 'dependabot[bot]'
+    permissions:
+      pull-requests: write
+      contents: read
+    concurrency:
+      group: claude-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: Sotatek-HuyTran5/claude-pr-review-action@main
+        with:
+          api-url: ${{ secrets.REVIEW_API_URL }}
+          api-secret: ${{ secrets.REVIEW_API_SECRET }}
+
+  # Triggered when someone comments "claude review" or "claude init review" on a PR
+  comment-review:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'issue_comment' &&
       github.event.issue.pull_request != null &&
       contains(toLower(github.event.comment.body), 'claude') &&
       github.event.sender.type != 'Bot'
@@ -16,7 +39,7 @@ jobs:
       contents: read
       issues: write
     steps:
-      - name: React to comment (acknowledge)
+      - name: React to comment
         uses: actions/github-script@v7
         with:
           script: |
